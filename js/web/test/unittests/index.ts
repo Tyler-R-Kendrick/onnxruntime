@@ -12,5 +12,6 @@ if (typeof window !== 'undefined') {
 }
 
 require('./backends/wasm/test-model-metadata');
+require('./backends/webgpu/test-kv-compression-config');
 
 require('./opset');

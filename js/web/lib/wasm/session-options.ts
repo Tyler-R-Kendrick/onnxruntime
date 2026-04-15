@@ -4,6 +4,7 @@
 import type { InferenceSession } from 'onnxruntime-common';
 
 import { getInstance } from './wasm-factory';
+import { normalizeKvCompressionConfig, type WebGpuKvCompressionOptions } from './jsep/webgpu/kv-compression-config';
 import { allocWasmString, checkLastError, iterateExtraOptions } from './wasm-utils';
 
 const getGraphOptimzationLevel = (graphOptimizationLevel: string | unknown): number => {
@@ -134,6 +135,14 @@ const setExecutionProviders = async (
             if (webgpuOptions.validationMode) {
               appendEpOption(epOptions, 'validationMode', webgpuOptions.validationMode, allocs);
             }
+
+            const kvCompressionConfig = normalizeKvCompressionConfig(webgpuOptions as WebGpuKvCompressionOptions);
+            appendEpOption(epOptions, 'kvCompressionEnabled', kvCompressionConfig.enabled ? '1' : '0', allocs);
+            appendEpOption(epOptions, 'kvCompressionMode', kvCompressionConfig.mode, allocs);
+            appendEpOption(epOptions, 'kvCompressionBits', kvCompressionConfig.bits.toString(), allocs);
+            appendEpOption(epOptions, 'kvCompressionGroupSize', kvCompressionConfig.groupSize.toString(), allocs);
+            appendEpOption(epOptions, 'kvCompressionLayers', kvCompressionConfig.layers.join(','), allocs);
+            appendEpOption(epOptions, 'kvCompressionDebug', kvCompressionConfig.debug ? '1' : '0', allocs);
           }
 
           const info = getInstance().webgpuRegisterDevice!(customDevice);
