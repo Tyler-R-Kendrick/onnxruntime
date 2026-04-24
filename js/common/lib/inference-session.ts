@@ -273,6 +273,49 @@ export declare namespace InferenceSession {
     validationMode?: 'disabled' | 'wgpuOnly' | 'basic' | 'full';
 
     /**
+     * Enable TurboQuant-style KV-cache compression for decode-time key/value tensors.
+     *
+     * @default false
+     */
+    kvCompressionEnabled?: boolean;
+
+    /**
+     * Select the KV-cache compression mode.
+     *
+     * @default 'perGroupSymmetric'
+     */
+    kvCompressionMode?: 'perTokenSymmetric' | 'perGroupSymmetric';
+
+    /**
+     * Bit-width used by KV-cache compression.
+     *
+     * @default 4
+     */
+    kvCompressionBits?: 2 | 3 | 4 | 8;
+
+    /**
+     * Group size used by KV-cache compression.
+     *
+     * @default 128
+     */
+    kvCompressionGroupSize?: 32 | 64 | 128 | 256;
+
+    /**
+     * Restrict KV-cache compression to a subset of decoder layer indices.
+     * Empty list means all supported layers.
+     *
+     * @default []
+     */
+    kvCompressionLayers?: readonly number[];
+
+    /**
+     * Emit additional diagnostics for KV-cache compression path selection.
+     *
+     * @default false
+     */
+    kvCompressionDebug?: boolean;
+
+    /**
      * Specify an optional WebGPU device to be used by the WebGPU execution provider.
      */
     device?: TryGetGlobalType<'GPUDevice'>;
