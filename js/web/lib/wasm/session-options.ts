@@ -136,13 +136,21 @@ const setExecutionProviders = async (
               appendEpOption(epOptions, 'validationMode', webgpuOptions.validationMode, allocs);
             }
 
-            const kvCompressionConfig = normalizeKvCompressionConfig(webgpuOptions as WebGpuKvCompressionOptions);
-            appendEpOption(epOptions, 'kvCompressionEnabled', kvCompressionConfig.enabled ? '1' : '0', allocs);
-            appendEpOption(epOptions, 'kvCompressionMode', kvCompressionConfig.mode, allocs);
-            appendEpOption(epOptions, 'kvCompressionBits', kvCompressionConfig.bits.toString(), allocs);
-            appendEpOption(epOptions, 'kvCompressionGroupSize', kvCompressionConfig.groupSize.toString(), allocs);
-            appendEpOption(epOptions, 'kvCompressionLayers', kvCompressionConfig.layers.join(','), allocs);
-            appendEpOption(epOptions, 'kvCompressionDebug', kvCompressionConfig.debug ? '1' : '0', allocs);
+            const hasKvCompressionOption =
+              'kvCompressionEnabled' in webgpuOptions || 'kvCompressionMode' in webgpuOptions ||
+              'kvCompressionBits' in webgpuOptions || 'kvCompressionGroupSize' in webgpuOptions ||
+              'kvCompressionLayers' in webgpuOptions || 'kvCompressionDebug' in webgpuOptions;
+            if (hasKvCompressionOption) {
+              const kvCompressionConfig = normalizeKvCompressionConfig(webgpuOptions as WebGpuKvCompressionOptions);
+              appendEpOption(epOptions, 'kvCompressionEnabled', kvCompressionConfig.enabled ? '1' : '0', allocs);
+              appendEpOption(epOptions, 'kvCompressionMode', kvCompressionConfig.mode, allocs);
+              appendEpOption(epOptions, 'kvCompressionBits', kvCompressionConfig.bits.toString(), allocs);
+              appendEpOption(epOptions, 'kvCompressionGroupSize', kvCompressionConfig.groupSize.toString(), allocs);
+              if (kvCompressionConfig.layers.length > 0) {
+                appendEpOption(epOptions, 'kvCompressionLayers', kvCompressionConfig.layers.join(','), allocs);
+              }
+              appendEpOption(epOptions, 'kvCompressionDebug', kvCompressionConfig.debug ? '1' : '0', allocs);
+            }
           }
 
           const info = getInstance().webgpuRegisterDevice!(customDevice);

@@ -1,16 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import type { InferenceSession } from 'onnxruntime-common';
+
 export type KvCompressionMode = 'perTokenSymmetric' | 'perGroupSymmetric';
 
-export interface WebGpuKvCompressionOptions {
-  kvCompressionEnabled?: boolean;
-  kvCompressionMode?: KvCompressionMode;
-  kvCompressionBits?: number;
-  kvCompressionGroupSize?: number;
-  kvCompressionLayers?: readonly number[];
-  kvCompressionDebug?: boolean;
-}
+export type WebGpuKvCompressionOptions = Pick<
+  InferenceSession.WebGpuExecutionProviderOption,
+  | 'kvCompressionEnabled'
+  | 'kvCompressionMode'
+  | 'kvCompressionBits'
+  | 'kvCompressionGroupSize'
+  | 'kvCompressionLayers'
+  | 'kvCompressionDebug'
+>;
 
 export interface NormalizedKvCompressionConfig {
   enabled: boolean;
@@ -38,7 +41,7 @@ const isValidGroupSize = (value: number): value is 32 | 64 | 128 | 256 =>
 export const normalizeKvCompressionConfig = (
   webgpuOptions: WebGpuKvCompressionOptions,
 ): NormalizedKvCompressionConfig => {
-  const config: NormalizedKvCompressionConfig = { ...DEFAULT_KV_COMPRESSION_CONFIG };
+  const config: NormalizedKvCompressionConfig = { ...DEFAULT_KV_COMPRESSION_CONFIG, layers: [...DEFAULT_KV_COMPRESSION_CONFIG.layers] };
 
   if (webgpuOptions.kvCompressionEnabled !== undefined) {
     if (typeof webgpuOptions.kvCompressionEnabled !== 'boolean') {
